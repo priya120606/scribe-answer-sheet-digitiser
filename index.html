@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Scribe – Answer Sheet Digitiser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f8fc;--card:#fff;--ink:#12234a;--mute:#5b6b8c;--line:#dfe6f1;--navy:#12306b;--blue:#e8f0fd;--teal:#0f9d9a;--warn:#fff3cf;--warnink:#8a5a00;--bad:#c0392b;--ok:#13795b;--shadow:0 1px 2px rgba(18,35,74,.06),0 6px 18px rgba(18,35,74,.05);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1526;--card:#15203a;--ink:#e6ecf8;--mute:#93a3c4;--line:#26345a;--blue:#1b2c52;--warn:#4a3a10;--warnink:#ffd77a;--navy:#6aa0ff;--shadow:none}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'Plus Jakarta Sans',system-ui,sans-serif}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:#0f2556;color:#cfdcf7;padding:20px 14px;position:sticky;top:0;height:100vh}
+.logo{font-weight:700;font-size:18px;color:#fff;padding:4px 10px 18px}.logo i{color:#5fe0d8;font-style:normal}
+aside button{all:unset;display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border-radius:8px;cursor:pointer;color:#cfdcf7;margin-bottom:2px;box-sizing:border-box}
+aside button:hover{background:rgba(255,255,255,.08)}aside button.on{background:#fff;color:#12306b;font-weight:600}aside button:disabled{opacity:.4;cursor:not-allowed}
+aside small{display:block;margin:16px 12px 6px;color:#8fa5d4}
+main{padding:0 28px 40px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:22px;gap:12px;flex-wrap:wrap}
+h1{font-size:22px;margin:0}h2{font-size:15px;margin:0 0 12px}.sub{color:var(--mute);margin:2px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}.g32{grid-template-columns:2fr 1fr}
+.kpi b{display:block;font-size:28px;color:var(--navy)}.kpi span{color:var(--mute)}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--teal);transform:translateY(-1px)}.btn.pri{background:#12306b;color:#fff;border-color:#12306b}
+.btn.ok{background:var(--teal);color:#fff;border-color:var(--teal)}.btn.bad{color:var(--bad)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600;font-size:12px}
+tr.click{cursor:pointer}tr.click:hover{background:var(--blue)}
+.pill{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--blue);color:var(--navy);white-space:nowrap}.pill.ok{background:#d9f3ea;color:var(--ok)}.pill.w{background:var(--warn);color:var(--warnink)}.pill.b{background:#fde4e1;color:var(--bad)}
+label{display:block;font-weight:600;margin-bottom:4px;font-size:13px}input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--card);color:var(--ink)}
+.err{color:var(--bad);font-size:12px;min-height:16px}.drop{border:2px dashed #a9bde3;border-radius:12px;padding:36px;text-align:center;cursor:pointer;background:var(--blue);transition:.15s}.drop.over{border-color:var(--teal);background:#dff6f4}
+canvas,img.sheet{max-width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+.bar{height:8px;background:var(--blue);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal);width:0;transition:width .4s}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}.steps span{padding:4px 12px;border-radius:99px;background:var(--blue);color:var(--mute);font-size:12px;font-weight:600}.steps span.on{background:var(--navy);color:#fff}.steps span.done{background:#d9f3ea;color:var(--ok)}
+mark{background:var(--warn);color:var(--warnink);padding:0 2px;border-radius:3px;border-bottom:2px solid #e0a100}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}.q.low{border-color:#e0a100;background:var(--warn)}.q.low textarea{background:var(--card)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{flex:1}.note{background:var(--warn);color:var(--warnink);padding:8px 12px;border-radius:8px;font-size:12.5px;margin-bottom:12px}
+#toast{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:20}#toast.show{opacity:1}
+.spin{width:16px;height:16px;border:2px solid #fff6;border-top-color:#fff;border-radius:50%;display:inline-block;animation:s .7s linear infinite;vertical-align:-3px}@keyframes s{to{transform:rotate(360deg)}}
+.paper{background:#fff;color:#12234a;border:1px solid var(--line);border-radius:6px;padding:28px;max-width:760px;margin:auto}.paper h3{margin:0}.paper table td,.paper table th{color:#12234a;border-color:#dfe6f1}
+.wide{overflow-x:auto}.sr{position:absolute;left:-9999px}aside button:focus-visible{outline:2px solid #5fe0d8;outline-offset:-2px}.drop:focus-visible,tr.click:focus-visible{outline:2px solid var(--teal);outline-offset:2px}input[aria-invalid=true]{border-color:var(--bad)}.paper{overflow-wrap:anywhere}.fine{font-size:12px;color:var(--mute)}
+@media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;overflow-x:auto;gap:4px;padding:8px}aside small,.logo{display:none}aside button{width:auto;white-space:nowrap}.g4{grid-template-columns:1fr 1fr}.g2,.g32{grid-template-columns:1fr}main{padding:0 14px 30px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{aside,.top,.noprint,#toast{display:none!important}.app{display:block}main{padding:0}.paper{border:0;max-width:none}body{background:#fff}}
+</style></head><body>
+<div class="app"><aside><div class="logo">Scribe<i>.</i>edu</div>
+<small>Workspace</small><nav id="nav" aria-label="Workflow"></nav></aside>
+<main id="main"><div class="top"><div><b id="crumb"></b></div><div class="row"><span class="pill" id="whoami">Demo workspace</span></div></div><div id="view"></div></main></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LS='scribe.v2',CDN='https://cdnjs.cloudflare.com/ajax/libs/';
+/* ---------- storage: localStorage for data, IndexedDB for images ---------- */
+let DB=null,warned=false;
+const dbOpen=()=>new Promise(r=>{try{const q=indexedDB.open('scribe',1);q.onupgradeneeded=()=>q.result.createObjectStore('b');q.onsuccess=()=>{DB=q.result;r(true)};q.onerror=q.onblocked=()=>r(false)}catch(e){r(false)}});
+const dbReq=(mode,fn)=>new Promise(r=>{if(!DB)return r(null);try{const t=DB.transaction('b',mode),q=fn(t.objectStore('b'));t.oncomplete=()=>r(q?q.result:true);t.onerror=t.onabort=()=>r(null)}catch(e){r(null)}});
+const bSet=(k,v)=>dbReq('readwrite',s=>s.put(v,k)),bGet=k=>dbReq('readonly',s=>s.get(k)).then(v=>typeof v==='string'?v:null),bDel=k=>dbReq('readwrite',s=>s.delete(k));
+const warn=m=>{if(!warned){warned=true;toast(m,1)}};
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S));return true}catch(e){warn('Browser storage is full or blocked. Your work will not survive a refresh.');return false}};
+const toast=(m,long)=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),long?5000:2600)};
+/* ---------- data ---------- */
+const QS=[["Define photosynthesis.","Photosynthesis is the process by which green plants make food using sunlight, water and {{c}}arbon dioxide.",88,2],["Name the gas released during photosynthesis.","The gas released is oxygen.",96,1],["How many chambers does a human heart have?","A human heart has {{4}} chambers: two atria and two ventricles.",72,1],["State the formula for the area of a circle.","Area = {{π}} r² where r is the radius.",64,2],["What is 12 × 8 + 4?","12 × 8 = 96, then 96 + 4 = {{1}}00",58,2]];
+function mk(name,roll,cls,subject,exam,status,marks,conf,id,date){return{id,name,roll,cls,subject,exam,status,date,qs:QS.map((q,i)=>({n:i+1,q:q[0],text:q[1],conf:conf?conf[i]:q[2],marks:marks?marks[i]:'',max:q[3]}))}}
+const seed=()=>[["Aarav Kumar","21","8-A","Science","Mid-Term 2026","Approved",[2,1,1,2,2],[93,96,90,88,91]],["Diya Sharma","07","8-A","Science","Mid-Term 2026","Approved",[2,1,1,1,0],[90,95,85,80,86]],["Karthik S","32","8-B","Science","Mid-Term 2026","Pending review",[1,1,0,1,1],[82,90,70,66,74]],["Meena Raj","15","8-B","Science","Mid-Term 2026","Pending review",[2,0,1,2,1],[85,60,88,78,69]],["Rohan Das","28","8-A","Science","Mid-Term 2026","Approved",[2,1,1,2,2],[95,97,92,90,93]]].map((r,i)=>({...mk(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],'S'+(i+1),'2026-10-'+(10+i)),sample:true}));
+const fresh=()=>({records:seed(),cur:null,draft:{},page:'dash',viewId:null});
+let S;try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}
+if(!S||!S.records)S=fresh();
+let IMG=null,PRE=null,page='dash',viewId=null,FILE=null; // IMG: stored original (Image); FILE: file picked but not yet submitted
+const avg=r=>Math.round(r.qs.reduce((a,q)=>a+q.conf,0)/r.qs.length);
+const markErr=q=>{const s=String(q.marks??'').trim();if(s==='')return'Enter marks for this question.';const v=Number(s);if(!isFinite(v))return'Marks must be a number.';if(v<0||v>q.max)return`Marks must be between 0 and ${q.max}.`;if((v*2)%1)return'Use whole or half marks.';return''};
+const tot=r=>r.qs.reduce((a,q)=>a+(markErr(q)?0:+q.marks),0),mx=r=>r.qs.reduce((a,q)=>a+q.max,0),bad=r=>r.qs.filter(markErr).length;
+const pill=s=>`<span class="pill ${s=='Approved'?'ok':s=='Needs correction'?'b':'w'}">${esc(s)}</span>`;
+const plain=t=>t.replace(/\{\{|\}\}/g,''),hl=t=>esc(t).replace(/\{\{(.*?)\}\}/g,'<mark title="Uncertain character">$1</mark>');
+const stage=()=>S.cur?S.cur.stage||1:0;
+const chip=()=>S.cur&&S.cur.fileMeta&&S.cur.fileMeta.sample?'<span class="pill w">Built-in sample sheet, not your upload</span>':'';
+const NAV=[['dash','Dashboard'],['upload','Upload sheet'],['pre','Preprocessing'],['rec','Recognition'],['review','Teacher review'],['report','Digital report']];
+const can=k=>k=='pre'?stage()>=1:k=='rec'?stage()>=2:k=='review'?stage()>=3:k=='report'?S.records.length>0:true;
+const why={pre:'Upload a sheet first',rec:'Finish preprocessing first',review:'Finish recognition first',report:'No reports yet'};
+function go(p){if(!can(p)){toast(why[p]||'Complete the earlier steps first');p='dash'}if(p!='report')viewId=null;page=p;S.page=p;S.viewId=viewId;save();render();scrollTo(0,0);const h=$('#view h1');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
+function render(){
+ $('#nav').innerHTML=NAV.map(([k,l])=>`<button class="${page==k?'on':''}" ${page==k?'aria-current="page"':''} ${can(k)?'':`disabled title="${why[k]}"`} onclick="go('${k}')">${l}</button>`).join('');
+ const t=NAV.find(n=>n[0]==page)[1];$('#crumb').textContent=t;document.title=t+' – Scribe';
+ $('#view').innerHTML=({dash,upload,pre,rec,review,report}[page])();
+ ({upload:upInit,pre:preInit,rec:recInit,review:revInit}[page]||(()=>{}))()}
+const steps=n=>`<div class="steps" aria-label="Workflow progress">${['Upload','Preprocess','Recognise','Review','Report'].map((s,i)=>`<span class="${i==n?'on':i<n?'done':''}" ${i==n?'aria-current="step"':''}>${s}</span>`).join('')}</div>`;
+const missing=(msg)=>`<div class="note" role="alert">${msg} <button class="btn" onclick="go('upload')">Upload the file again</button></div>`;
+/* ---------- dashboard ---------- */
+function dash(){const R=S.records,ok=R.filter(r=>r.status=='Approved').length,pend=R.length-ok,a=R.length?Math.round(R.reduce((s,r)=>s+avg(r),0)/R.length):0;
+ const b=[0,0,0,0];R.forEach(r=>{const p=tot(r)/mx(r)*100;b[p<40?0:p<60?1:p<80?2:3]++});const m=Math.max(1,...b);
+ return `<div class="row" style="margin-bottom:18px"><div><h1>Dashboard</h1><p class="sub">Digitise handwritten answer sheets in five steps.</p></div><span class="sp"></span><button class="btn" onclick="viewId=null;go('report')" ${R.length?'':'disabled'}>View reports</button><button class="btn pri" onclick="go('upload')">Upload answer sheet</button></div>
+ <div class="grid g4"><div class="card kpi"><span>Sheets uploaded</span><b>${R.length+(S.cur&&!R.some(r=>r.id==S.cur.id)?1:0)}</b></div><div class="card kpi"><span>Approved sheets</span><b>${ok}</b></div><div class="card kpi"><span>Pending teacher review</span><b>${pend+(S.cur&&!R.some(r=>r.id==S.cur.id)?1:0)}</b></div><div class="card kpi"><span>Average confidence (sample scores)</span><b>${a}%</b></div></div>
+ <div class="grid g32" style="margin-top:16px"><div class="card wide"><h2>Recent uploads</h2><table><tr><th>Student</th><th>Class</th><th>Subject</th><th>Marks</th><th>Confidence</th><th>Status</th></tr>${[...R].reverse().map(r=>`<tr class="click" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="viewId='${r.id}';go('report')"><td>${esc(r.name)} ${r.sample?'<span class="pill">Sample record</span>':''}<br><small class="sub">Roll ${esc(r.roll)}</small></td><td>${esc(r.cls)}</td><td>${esc(r.subject)}</td><td>${tot(r)}/${mx(r)}</td><td>${avg(r)}%</td><td>${pill(r.status)}</td></tr>`).join('')}</table></div>
+ <div class="card"><h2>Score distribution</h2><svg viewBox="0 0 240 150" width="100%" role="img" aria-label="Number of students in each score band: ${b.join(', ')}">${b.map((v,i)=>`<rect x="${14+i*56}" y="${120-v/m*100}" width="40" height="${v/m*100}" rx="4" fill="${i==3?'#0f9d9a':'#12306b'}"/><text x="${34+i*56}" y="${112-v/m*100}" text-anchor="middle" font-size="11" fill="currentColor">${v}</text><text x="${34+i*56}" y="138" text-anchor="middle" font-size="10" fill="#7a89a8">${['<40','40-59','60-79','80+'][i]}%</text>`).join('')}</svg>
+ ${S.cur?`<hr style="border:0;border-top:1px solid var(--line)"><p><b>In progress:</b> ${esc(S.cur.name)}</p><button class="btn pri" onclick="go(['upload','pre','rec','review'][stage()])">Continue</button>`:''}
+ <hr style="border:0;border-top:1px solid var(--line)"><button class="btn bad" onclick="resetAll()">Reset demo data</button></div></div>`}
+async function resetAll(){if(!confirm('Delete all records, uploaded files and edits stored in this browser, and restore the sample records?'))return;await dbReq('readwrite',s=>s.clear());S=fresh();IMG=PRE=FILE=null;save();go('dash');toast('Demo data reset')}
+/* ---------- image helpers ---------- */
+const loadImg=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error('img'));i.src=src});
+async function normalize(src){const i=src.tagName?src:await loadImg(src),w=i.width||i.naturalWidth,h=i.height||i.naturalHeight,k=Math.min(1,1600/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);const url=c.toDataURL('image/jpeg',.9);return{url,img:await loadImg(url)}}
+function draw(c,img,w){const k=Math.min(1,w/img.width);c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height)}
+const loadScript=(src,test)=>new Promise((ok,no)=>{if(test())return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('load'));document.head.appendChild(s)});
+const loadPdfJs=()=>loadScript(CDN+'pdf.js/3.11.174/pdf.min.js',()=>window.pdfjsLib).then(()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=CDN+'pdf.js/3.11.174/pdf.worker.min.js';return pdfjsLib});
+async function renderPdf(n){const lib=await loadPdfJs(),doc=await lib.getDocument({data:FILE.ab.slice(0)}).promise;FILE.pages=doc.numPages;const pg=await doc.getPage(n),v0=pg.getViewport({scale:1}),v=pg.getViewport({scale:Math.min(3,1600/Math.max(v0.width,v0.height))}),c=document.createElement('canvas');c.width=Math.round(v.width);c.height=Math.round(v.height);await pg.render({canvasContext:c.getContext('2d'),viewport:v}).promise;const r=await normalize(c);FILE.url=r.url;FILE.img=r.img;FILE.page=n}
+function sample(){return document.fonts.load('26px Caveat').catch(()=>0).then(()=>{const c=document.createElement('canvas');c.width=600;c.height=780;const x=c.getContext('2d');x.fillStyle='#f3ecd6';x.fillRect(0,0,600,780);
+ x.strokeStyle='#9bb7d9';x.lineWidth=1;for(let y=110;y<770;y+=32){x.beginPath();x.moveTo(30,y);x.lineTo(570,y);x.stroke()}
+ x.fillStyle='#1a2a6c';x.font='500 26px Caveat, cursive';x.fillText('Science – Mid Term Examination',60,50);x.fillText('Name: Sample Student     Roll: 00',60,85);
+ let y=140;QS.forEach((q,i)=>{x.fillText(`${i+1}. `+plain(q[1]).slice(0,52),40,y);if(q[1].length>52)x.fillText(plain(q[1]).slice(52),62,y+32);y+=i==0?96:64});
+ const d=x.getImageData(0,0,600,780);for(let i=0;i<d.data.length;i+=4){const n=(Math.random()-.5)*34;d.data[i]+=n;d.data[i+1]+=n;d.data[i+2]+=n}x.putImageData(d,0,0);return c})}
+/* ---------- upload ---------- */
+function upload(){const c=S.cur||S.draft||{};return steps(0)+`<h1>Upload answer sheet</h1><p class="sub">JPG, JPEG, PNG or PDF, up to 10 MB. Your file stays in this browser.</p><div class="grid g2" style="margin-top:16px"><div class="card"><div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose an answer sheet file"><b>Drag and drop a scanned sheet</b><p class="sub">or click to browse</p><input type="file" id="file" hidden accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"></div><div class="err" id="eFile" role="alert"></div><div id="prev" style="margin-top:10px"></div><div class="row" style="margin-top:8px"><button class="btn" id="useSample">Use built-in sample sheet (demo)</button><button class="btn bad" id="rm" style="display:none">Remove file</button></div></div>
+<div class="card"><h2>Student details</h2>${[['name','Student name'],['roll','Roll number'],['cls','Class'],['subject','Subject'],['exam','Examination name']].map(([k,l])=>`<div style="margin-bottom:8px"><label for="f_${k}">${l} *</label><input id="f_${k}" value="${esc(c[k]||'')}" aria-describedby="e_${k}" required><div class="err" id="e_${k}"></div></div>`).join('')}<div class="row"><button class="btn" id="cancel">Cancel</button><span class="sp"></span><button class="btn pri" id="cont">${S.cur&&!FILE?'Save details and continue':'Continue to preprocessing'}</button></div></div></div>`}
+function upInit(){const d=$('#drop'),f=$('#file');d.onclick=()=>f.click();d.onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();f.click()}};
+ d.ondragover=e=>{e.preventDefault();d.classList.add('over')};d.ondragleave=()=>d.classList.remove('over');d.ondrop=e=>{e.preventDefault();d.classList.remove('over');take(e.dataTransfer.files[0])};f.onchange=()=>{take(f.files[0]);f.value=''};
+ $('#rm').onclick=()=>{FILE=null;showPrev()};
+ $('#useSample').onclick=async()=>{try{const r=await normalize(await sample());FILE={name:'sample-answer-sheet.png',sample:1,url:r.url,img:r.img}}catch(e){return $('#eFile').textContent='The sample sheet could not be created.'}$('#eFile').textContent='';showPrev()};
+ ['name','roll','cls','subject','exam'].forEach(k=>$('#f_'+k).oninput=e=>{S.draft=S.draft||{};S.draft[k]=e.target.value;save()});
+ $('#cancel').onclick=async()=>{if(S.cur){if(!confirm('Discard the sheet in progress and its edits?'))return;await dropCur()}FILE=null;S.draft={};save();go('dash')};
+ $('#cont').onclick=submitUp;showPrev()}
+async function dropCur(){if(!S.cur)return;if(!S.records.some(r=>r.id==S.cur.id)){await bDel('orig:'+S.cur.id);await bDel('proc:'+S.cur.id)}S.cur=null;IMG=PRE=null}
+async function take(file){const e=$('#eFile');e.textContent='';if(!file)return;
+ const ext=((file.name.match(/\.(\w+)$/)||[])[1]||'').toLowerCase();
+ if(!['jpg','jpeg','png','pdf'].includes(ext)||(file.type&&!/^(image\/(jpeg|png)|application\/pdf)$/.test(file.type)))return e.textContent='Unsupported file type. Choose a JPG, JPEG, PNG or PDF file.';
+ if(!file.size)return e.textContent='This file is empty. Choose another file.';
+ if(file.size>10*1048576)return e.textContent='File is larger than 10 MB. Choose a smaller scan.';
+ let ab;try{ab=await file.arrayBuffer()}catch(x){return e.textContent='This file could not be read. Choose another file.'}
+ const h=new Uint8Array(ab.slice(0,4)),isPdf=h[0]==0x25&&h[1]==0x50&&h[2]==0x44&&h[3]==0x46,isImg=(h[0]==0xFF&&h[1]==0xD8)||(h[0]==0x89&&h[1]==0x50);
+ if(ext=='pdf'?!isPdf:!isImg)return e.textContent='The file contents do not match its extension. Choose a valid JPG, PNG or PDF file.';
+ $('#prev').innerHTML='<span class="spin" style="border-color:#12306b55;border-top-color:#12306b"></span> Reading file…';
+ try{if(isPdf){FILE={name:file.name,pdf:1,ab,page:1,pages:1};await renderPdf(1)}
+  else{const u=URL.createObjectURL(file);try{const r=await normalize(u);FILE={name:file.name,url:r.url,img:r.img}}finally{URL.revokeObjectURL(u)}}}
+ catch(x){FILE=null;e.textContent=x&&x.name=='PasswordException'?'This PDF is password-protected. Remove the password or choose another file.':x&&x.message=='load'?'PDF pages could not be rendered because the PDF library failed to load (internet access is needed for PDFs). Choose a JPG or PNG instead.':isPdf?'This PDF could not be rendered. It may be damaged. Choose another file.':'This image could not be read. Choose another file.'}
+ showPrev()}
+function showPrev(){const src=FILE?FILE.img:IMG,nm=FILE?FILE.name:(S.cur&&S.cur.file),p=$('#prev');$('#rm').style.display=FILE?'':'none';
+ if(!src){p.innerHTML=S.cur&&!FILE?missing('The stored image for this sheet is not available in this browser.'):'';return}
+ p.innerHTML=`<canvas id="pv" style="width:100%" role="img" aria-label="Preview of ${esc(nm)}"></canvas><small class="sub">${esc(nm)}${FILE&&FILE.sample?' · built-in sample sheet':''}${!FILE?' · currently uploaded':''}</small>`+(FILE&&FILE.pdf?`<div class="row" style="margin-top:8px"><label for="pg" style="margin:0">PDF page</label><select id="pg" style="width:auto">${Array.from({length:FILE.pages},(_,i)=>`<option ${i+1==FILE.page?'selected':''}>${i+1}</option>`).join('')}</select><span class="fine">of ${FILE.pages}. Only this page is processed.</span></div>`:'');
+ draw($('#pv'),src,520);const pg=$('#pg');if(pg)pg.onchange=async()=>{try{await renderPdf(+pg.value);showPrev()}catch(x){$('#eFile').textContent='That page could not be rendered.'}}}
+async function submitUp(){let ok=true;const v={};['name','roll','cls','subject','exam'].forEach(k=>{v[k]=$('#f_'+k).value.trim();const b=!v[k]||(k=='roll'&&!/^[\w-]+$/.test(v[k]));$('#e_'+k).textContent=b?(k=='roll'&&v[k]?'Use letters, numbers or hyphens only.':'This field is required.'):'';$('#f_'+k).setAttribute('aria-invalid',b);if(b)ok=false});
+ if(!FILE&&!(S.cur&&IMG)){$('#eFile').textContent='Select an answer sheet file first.';ok=false}
+ if(!ok){toast('Fix the highlighted fields');const f=document.querySelector('[aria-invalid=true]');if(f)f.focus();return}
+ if(!FILE){Object.assign(S.cur,v);save();toast('Details saved');return go('pre')}
+ if(S.cur&&stage()>=2&&!confirm('Replace the sheet in progress? Its recognition and review edits will be lost.'))return;
+ const b=$('#cont');b.innerHTML='<span class="spin"></span> Saving';b.disabled=true;
+ await dropCur();const id='N'+Date.now();
+ const stored=await bSet('orig:'+id,FILE.url);if(!stored)warn('The uploaded image could not be stored, so it will be lost if you refresh this page.');
+ IMG=FILE.img;PRE=null;S.cur={...v,id,file:FILE.name,fileMeta:{sample:!!FILE.sample,pdf:!!FILE.pdf,page:FILE.page||1,pages:FILE.pages||1},stage:1,date:new Date().toISOString().slice(0,10),status:'Pending review',qs:QS.map((q,i)=>({n:i+1,q:q[0],text:q[1],conf:q[2],marks:'',max:q[3]}))};FILE=null;S.draft={};save();toast('Upload saved');go('pre')}
+/* ---------- preprocessing ---------- */
+function pre(){return steps(1)+`<div class="row"><h1 class="sp">Image preprocessing</h1>${chip()}</div><p class="sub">Runs in your browser on the stored image.</p>`+(!IMG?missing('The uploaded image is no longer available in this browser, so it cannot be processed.'):`<div class="grid g2" style="margin-top:16px"><div class="card"><h2>Original</h2><canvas id="o" style="width:100%" role="img" aria-label="Original answer sheet"></canvas></div><div class="card"><h2 id="pt" aria-live="polite">Processed</h2><canvas id="p" style="width:100%" role="img" aria-label="Processed answer sheet"></canvas><div class="bar" style="margin-top:12px"><i id="pb"></i></div><div class="row" style="margin-top:10px" id="chips"></div></div></div><div class="row" style="margin-top:16px"><button class="btn" onclick="go('upload')">Back</button><button class="btn" id="rerun">Run again</button><span class="sp"></span><button class="btn pri" id="nx" disabled>Continue to recognition</button></div>`)}
+const FNS=[['Grayscale',d=>{for(let i=0;i<d.data.length;i+=4){const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];d.data[i]=d.data[i+1]=d.data[i+2]=g}}],
+ ['Noise removal',d=>{const s=new Uint8ClampedArray(d.data),w=d.width,h=d.height;for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){let a=0;for(let j=-1;j<2;j++)for(let i=-1;i<2;i++)a+=s[((y+j)*w+x+i)*4];const o=(y*w+x)*4;d.data[o]=d.data[o+1]=d.data[o+2]=a/9}}],
+ ['Enhancement',d=>{let lo=255,hi=0;for(let i=0;i<d.data.length;i+=4){lo=Math.min(lo,d.data[i]);hi=Math.max(hi,d.data[i])}const k=255/Math.max(1,hi-lo);for(let i=0;i<d.data.length;i+=4)d.data[i]=d.data[i+1]=d.data[i+2]=(d.data[i]-lo)*k}],
+ ['Thresholding',d=>{const hst=new Array(256).fill(0),n=d.data.length/4;for(let i=0;i<d.data.length;i+=4)hst[d.data[i]|0]++;let sum=0;hst.forEach((v,i)=>sum+=i*v);let sb=0,wb=0,mxv=0,t=128;for(let i=0;i<256;i++){wb+=hst[i];if(!wb)continue;const wf=n-wb;if(!wf)break;sb+=i*hst[i];const mb=sb/wb,mf=(sum-sb)/wf,v=wb*wf*(mb-mf)**2;if(v>mxv){mxv=v;t=i}}for(let i=0;i<d.data.length;i+=4)d.data[i]=d.data[i+1]=d.data[i+2]=d.data[i]>t*.92?255:0}]];
+function preInit(){if(!IMG)return;draw($('#o'),IMG,900);const p=$('#p'),W=$('#o').width,H=$('#o').height;p.width=W;p.height=H;const cx=p.getContext('2d');
+ const chips=()=>$('#chips').innerHTML=FNS.map(f=>`<span class="pill ${PRE?'ok':''}">${f[0]}</span>`).join('');
+ const done=()=>{$('#pt').textContent='Processed (binary image)';$('#nx').disabled=false};
+ $('#nx').onclick=()=>{S.cur.stage=Math.max(S.cur.stage,2);save();go('rec')};
+ let run=0;$('#rerun').onclick=()=>runIt();
+ if(PRE&&stage()>=2){loadImg(PRE).then(i=>{cx.drawImage(i,0,0,W,H);chips();$('#pb').style.width='100%';done()}).catch(()=>{PRE=null;runIt()})}else runIt();
+
+ function runIt(){const id=++run;cx.drawImage(IMG,0,0,W,H);$('#nx').disabled=true;$('#pb').style.width='0';PRE=null;chips();
+  let i=0;const step=async()=>{if(id!=run||page!='pre')return;if(i>=FNS.length){PRE=p.toDataURL('image/png');if(!await bSet('proc:'+S.cur.id,PRE))warn('The processed image could not be stored, so it will be lost if you refresh this page.');done();toast('Preprocessing complete');return}
+   $('#pt').textContent=FNS[i][0]+'…';const d=cx.getImageData(0,0,W,H);FNS[i][1](d);cx.putImageData(d,0,0);$('#pb').style.width=(i+1)/FNS.length*100+'%';$('#chips').children[i].className='pill ok';i++;setTimeout(step,500)};setTimeout(step,250)}}
+/* ---------- recognition (SAMPLE data only) ---------- */
+function rec(){return steps(2)+`<div class="row"><h1 class="sp">Handwriting recognition</h1>${chip()}</div><div class="note"><b>Sample results.</b> No handwriting model is connected. The answers below are fixed demonstration text, the same for every sheet. They are not read from your upload, so the teacher must correct them in the next step.</div><div class="grid g2"><div class="card"><h2>Answer sheet</h2>${PRE?`<img class="sheet" style="width:100%" alt="Processed answer sheet" src="${PRE}">`:missing('The processed image is not available in this browser.')}</div><div class="card"><div class="row"><h2 class="sp">Extracted content (sample)</h2><span class="pill w" id="st">Loading sample results…</span></div><div class="bar" style="margin-bottom:12px"><i id="rb"></i></div><div id="qs" aria-live="polite"></div></div></div><div class="row" style="margin-top:16px"><button class="btn" onclick="go('pre')">Back</button><span class="sp"></span><button class="btn pri" id="nx" disabled>Continue to teacher review</button></div>`}
+function recInit(){const c=S.cur,box=$('#qs');let i=0;const t=setInterval(()=>{if(page!='rec'){clearInterval(t);return}if(i>=c.qs.length){clearInterval(t);$('#st').textContent='Sample results loaded';$('#st').className='pill ok';$('#nx').disabled=false;return}
+ const q=c.qs[i++],low=q.conf<80;box.insertAdjacentHTML('beforeend',`<div class="q ${low?'low':''}"><div class="row"><b>Q${q.n}</b> <span class="sub">${esc(q.q)}</span><span class="sp"></span><span class="pill ${low?'w':'ok'}" title="Sample confidence score">${q.conf}% (sample)</span></div><div style="margin-top:6px">${hl(q.text)}</div>${low?'<small>Low sample confidence. Check highlighted characters.</small>':''}</div>`);$('#rb').style.width=i/c.qs.length*100+'%'},450);
+ $('#nx').onclick=()=>{S.cur.stage=Math.max(S.cur.stage,3);save();go('review')}}
+/* ---------- teacher review ---------- */
+function review(){const c=S.cur,src=IMG?IMG.src:PRE;return steps(3)+`<div class="row"><div><h1>Teacher review</h1><p class="sub">${esc(c.name)} · Roll ${esc(c.roll)} · ${esc(c.cls)} · ${esc(c.subject)}</p></div><span class="sp"></span>${chip()}${pill(c.status)}</div><div class="note">Answer text began as sample output. Compare it with the scan and correct it before approving.</div><div class="grid g2"><div class="card"><h2>Original answer sheet</h2>${src?`<img class="sheet" style="width:100%" alt="Original answer sheet" src="${src}">`:'<div class="note">No scanned image is stored for this record (sample records have none).</div>'}</div><div class="card"><div class="row"><h2 class="sp">Recognised answers</h2><b>Total: <span id="tt">${tot(c)}</span>/${mx(c)}</b></div><div class="err" id="sumerr" role="alert"></div>${c.qs.map((q,i)=>`<div class="q ${q.conf<80?'low':''}"><div class="row"><b>Q${q.n}</b><span class="sub sp">${esc(q.q)}</span><span class="pill ${q.conf<80?'w':'ok'}">${q.conf}% (sample)</span></div><label class="sr" for="t${i}">Answer ${q.n}</label><textarea id="t${i}" rows="2" data-i="${i}" class="tx">${esc(plain(q.text))}</textarea><div class="row" style="margin-top:6px"><label for="m${i}" style="margin:0">Marks</label><input type="number" id="m${i}" class="mk" data-i="${i}" min="0" max="${q.max}" step="0.5" value="${esc(q.marks)}" style="width:90px" aria-describedby="me${i}"><span class="sub">of ${q.max}</span></div><div class="err" id="me${i}" role="alert"></div></div>`).join('')}</div></div>
+ <div class="row" style="margin-top:16px"><button class="btn" onclick="commit();go('rec')">Back</button><span class="sp"></span><button class="btn bad" onclick="fin('Needs correction')">Send back for correction</button><button class="btn" onclick="saveChanges()">Save changes</button><button class="btn ok" onclick="fin('Approved')">Approve and generate report</button></div>`}
+function paint(i){const q=S.cur.qs[i],e=markErr(q),m=$('#m'+i);$('#me'+i).textContent=e;m.setAttribute('aria-invalid',!!e)}
+function revInit(){document.querySelectorAll('.mk').forEach(e=>{e.oninput=()=>{commit();paint(+e.dataset.i)};e.onblur=()=>paint(+e.dataset.i)});document.querySelectorAll('.tx').forEach(e=>e.oninput=()=>commit())}
+function commit(){const c=S.cur;if(!c||page!='review')return;document.querySelectorAll('.tx').forEach(e=>c.qs[e.dataset.i].text=e.value);document.querySelectorAll('.mk').forEach(e=>c.qs[e.dataset.i].marks=e.value.trim());const t=$('#tt');if(t)t.textContent=tot(c);save()}
+const snap=c=>JSON.parse(JSON.stringify(c));
+const upsert=c=>{S.records=S.records.filter(r=>r.id!=c.id).concat([snap(c)])};
+function saveChanges(){commit();const c=S.cur,n=bad(c);if(S.records.some(r=>r.id==c.id)){upsert(c);save()}c.qs.forEach((q,i)=>paint(i));toast(n?`Saved. ${n} question${n>1?'s':''} still need valid marks.`:'Changes saved')}
+function fin(status){commit();const c=S.cur;
+ if(status=='Approved'){const n=bad(c);c.qs.forEach((q,i)=>paint(i));if(n){$('#sumerr').textContent=`Cannot approve: ${n} question${n>1?'s need':' needs'} valid marks.`;toast('Cannot approve. Fix the marks marked in red.');const f=c.qs.findIndex(markErr);$('#m'+f).focus();return}}
+ c.status=status;upsert(c);viewId=c.id;S.cur=null;IMG=null;PRE=null;save();toast(status=='Approved'?'Approved':'Sent back for correction');go('report')}
+async function reopen(id){const r=S.records.find(x=>x.id==id);if(!r)return;if(S.cur&&S.cur.id!=id&&!confirm('Replace the sheet currently in progress? Unsaved work on it will be lost.'))return;
+ if(S.cur&&S.cur.id!=id)await dropCur();
+ S.cur={...snap(r),stage:3,status:r.status=='Needs correction'?r.status:'Pending review'};const o=await bGet('orig:'+id),p=await bGet('proc:'+id);IMG=o?await loadImg(o).catch(()=>null):null;PRE=p;save();go('review')}
+/* ---------- report ---------- */
+const note='Answer text in this prototype starts as sample demonstration text (no handwriting model is connected) and has been edited by the teacher. Confidence scores are sample values.';
+function html(r){const b=bad(r);return `<div class="paper" id="rp"><div class="row"><div class="sp"><h3>Answer Sheet Evaluation Report</h3><div class="sub" style="color:#5b6b8c">${esc(r.exam)} · ${esc(r.subject)}</div></div>${r.sample?'<span class="pill">Sample record</span>':''}<span class="pill ${r.status=='Approved'?'ok':'w'}">${esc(r.status)}</span></div><hr style="border:0;border-top:1px solid #dfe6f1;margin:14px 0"><div class="grid g2" style="gap:4px 20px"><div><b>Student:</b> ${esc(r.name)}</div><div><b>Roll no:</b> ${esc(r.roll)}</div><div><b>Class:</b> ${esc(r.cls)}</div><div><b>Date:</b> ${esc(r.date)}</div></div>${b?`<p class="note" style="margin-top:12px">Marks incomplete or invalid for ${b} question${b>1?'s':''}. The total counts valid marks only.</p>`:''}<div class="wide"><table style="margin-top:14px"><tr><th>Q</th><th>Question</th><th>Reviewed answer</th><th>Sample conf.</th><th>Marks</th></tr>${r.qs.map(q=>`<tr><td>${q.n}</td><td>${esc(q.q)}</td><td>${esc(plain(q.text))}</td><td>${q.conf}%</td><td>${markErr(q)?'–':q.marks}/${q.max}</td></tr>`).join('')}</table></div><div class="row" style="margin-top:14px"><span class="sp fine">Average sample confidence ${avg(r)}%</span><b style="font-size:18px">Total: ${tot(r)} / ${mx(r)} (${Math.round(tot(r)/mx(r)*100)}%)</b></div><p class="fine" style="margin-bottom:0">${note}</p></div>`}
+const curRec=()=>S.records.find(x=>x.id==viewId)||S.records[S.records.length-1];
+function report(){const r=curRec();viewId=r.id;S.viewId=viewId;
+ return `<div class="row noprint" style="margin-bottom:16px"><div><h1>Digital report</h1></div><span class="sp"></span><label for="pick" class="sr">Choose report</label><select id="pick" style="width:auto;max-width:100%" onchange="viewId=this.value;S.viewId=viewId;save();render()">${S.records.map(x=>`<option value="${x.id}" ${x.id==r.id?'selected':''}>${esc(x.name)} – ${esc(x.subject)}</option>`).join('')}</select><button class="btn" onclick="reopen('${r.id}')">Reopen for review</button><button class="btn" onclick="window.print()">Print</button><button class="btn" onclick="dlHtml()">Download HTML</button><button class="btn pri" id="bpdf" onclick="dlPdf()">Download PDF</button></div>${html(r)}`}
+const fname=(r,x)=>`report-${r.name.replace(/\W+/g,'_')}-${r.roll}.${x}`;
+function dlHtml(){const r=curRec();const doc=`<!DOCTYPE html><meta charset="utf-8"><title>Report – ${esc(r.name)}</title><style>body{font:14px system-ui;padding:24px;color:#12234a}.paper{max-width:760px;margin:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #dfe6f1}.pill{background:#e8f0fd;padding:2px 10px;border-radius:9px}.row{display:flex;gap:10px;align-items:center}.sp{flex:1}.grid{display:grid;grid-template-columns:1fr 1fr}.fine{font-size:12px;color:#5b6b8c}.sub{color:#5b6b8c}</style>${html(r)}`;
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([doc],{type:'text/html'}));a.download=fname(r,'html');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('HTML report downloaded')}
+async function dlPdf(){const r=curRec(),b=$('#bpdf');b.disabled=true;
+ try{await loadScript(CDN+'jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf)}catch(e){b.disabled=false;return toast('PDF export needs internet access to load its library. Use Print and choose Save as PDF instead.',1)}
+ try{const d=new jspdf.jsPDF({unit:'pt',format:'a4'}),W=595,M=44;let y=M;const L=s=>String(s).replace(/π/g,'pi').replace(/[^\x20-\xFF]/g,'?');
+  const ln=(t,sz,bold,gap=0)=>{d.setFont('helvetica',bold?'bold':'normal');d.setFontSize(sz);d.splitTextToSize(L(t),W-2*M).forEach(s=>{if(y>800){d.addPage();y=M}d.text(s,M,y);y+=sz*1.4});y+=gap};
+  ln('Answer Sheet Evaluation Report',18,1);ln(`${r.exam} - ${r.subject}`,11,0,8);ln(`Student: ${r.name}    Roll no: ${r.roll}    Class: ${r.cls}    Date: ${r.date}`,10);ln(`Status: ${r.status}${r.sample?' (sample record)':''}`,10,0,10);
+  r.qs.forEach(q=>{ln(`Q${q.n}. ${q.q}`,10,1);ln(`Answer: ${plain(q.text)}`,10);ln(`Marks: ${markErr(q)?'not entered':q.marks} / ${q.max}    (sample confidence ${q.conf}%)`,10,0,8)});
+  ln(`Total: ${tot(r)} / ${mx(r)} (${Math.round(tot(r)/mx(r)*100)}%)`,13,1,8);if(bad(r))ln(`Marks missing or invalid for ${bad(r)} question(s); total counts valid marks only.`,9);ln(note,8);
+  d.save(fname(r,'pdf'));toast('PDF downloaded')}catch(e){toast('The PDF could not be created. Use Print and choose Save as PDF instead.',1)}b.disabled=false}
+/* ---------- boot: restore the previous session ---------- */
+(async()=>{const ok=await dbOpen();let restored=false;
+ if(S.cur){const o=await bGet('orig:'+S.cur.id),p=await bGet('proc:'+S.cur.id);IMG=o?await loadImg(o).catch(()=>null):null;PRE=p;restored=true;if(!IMG&&!ok)warn('Stored images are unavailable in this browser. Re-upload your file if needed.')}
+ page=S.page||'dash';viewId=S.viewId||null;if(!NAV.some(n=>n[0]==page)||!can(page))page='dash';
+ render();if(restored)toast('Restored your previous session')})();
+</script></body></html>
